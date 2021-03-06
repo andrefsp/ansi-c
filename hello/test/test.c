@@ -1,8 +1,5 @@
 #include <stdio.h>
 #include <assert.h>
-#include "gc.h"
-#include <dlfcn.h>
-#include "kore/kore.h"
 #include "../src/point.c"
 #include "../src/server.c"
 
@@ -12,38 +9,29 @@ void test_point(void) {
     assert(("distance", *(p1->Dist(p1, p2)) == 4.0));
 }
 
-void test_server(void) {
-    Server *s = NewServer();
+void test_server_star_stop(void) {
+    Server *s = NewServer(9100);
     assert(s != NULL);
+    assert(("port is set", s->port == 9100));
     assert(("run server", s->Start(s) == 0));
+    assert(("stop server", s->Stop(s) == 0));
 }
 
-/*
-void test_kore_module(void) {
-    const char* error_message = NULL;
-
-    void* handle = NULL;
-    handle = dlopen("/home/andrefsp/development/ansi-c/hello/hello.so", RTLD_LAZY);
-    assert(handle != NULL);
-    dlerror();
-
-    static void         ( *run_server )(int argc, char *argv[]);
-
-    run_server = dlsym(handle, "kore_server_start");
+void test_server_star_listen(void) {
+    Server *s = NewServer(9100);
+    assert(s != NULL);
     
-    error_message = dlerror();
-    if (error_message) {
-        printf("%s \n", error_message);
-    }
-
+    assert(("run server", s->Start(s) == 0));
+    assert(("listen server", s->Listen(s) == 0));
 }
-*/
+
 
 int main(void) {
     GC_INIT();
 
     test_point();
-    test_server();
-//    test_kore_module();
+    test_server_star_stop();
+    test_server_star_listen();
+
     return 0;
 }

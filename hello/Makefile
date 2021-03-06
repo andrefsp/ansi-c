@@ -13,10 +13,7 @@ PKG_CONFIG=$$(pkg-config --cflags --libs bdw-gc)
 INCLUDE=-I${PROJECT_DIR}/src/includes -I/opt/kore/kore/include
 
 build:
-	rm hello.so; kodev build
-
-run:
-	kodev run
+	echo "building" 
 
 
 # commands:
