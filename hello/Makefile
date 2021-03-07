@@ -8,7 +8,7 @@ TEST_TARGET=${TEST_BIN}/test
 
 
 # pkg-config
-PKG_CONFIG=$$(pkg-config --cflags --libs bdw-gc)
+PKG_CONFIG=$$(pkg-config --cflags --libs bdw-gc,libcurl)
 
 INCLUDE=-I${PROJECT_DIR}/src/includes -I/opt/kore/kore/include
 

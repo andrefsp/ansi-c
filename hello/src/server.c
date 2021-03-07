@@ -36,15 +36,30 @@ int Start(Server *s) {
     return 0;
 }
 
-int Listen(Server *s) {
-    int addrlen = sizeof(*(s->address));
+int listenLoop(Server *s) {
+    
+}
 
-    int socket = accept(
-        s->socket_fd, (struct sockaddr *)s->address, (socklen_t*)&addrlen
-    );
-    if (socket < 0) {
-        return -1;
-    } 
+int Listen(Server *s) {
+    char buffer[1024] = {0};
+
+    int addrlen = sizeof(*(s->address)); 
+    while (1) {
+        int socket = accept(
+            s->socket_fd, (struct sockaddr *)s->address, (socklen_t*)&addrlen
+        );
+        if (socket < 0) {
+            return -1;
+        }
+        int valread = read(socket , buffer, 1024);
+        printf("%s\n", buffer);
+
+        char *message = "HTTP/1.1 200 OK\r\n";
+        if (send(socket, message, strlen(message), 0) < 0) {
+            printf("Failed to send!");
+        }
+        close(socket);
+    }
     return 0;
 }
 
