@@ -1,17 +1,26 @@
 #ifndef _HELLO_RESPONSE_H
 #define _HELLO_RESPONSE_H
 
+
 typedef struct Response Response;
 
 struct Response {
-    void (*SetStatusCode)(int statusCode);
+    int StatusCode;
+    char *Status;
+
+    char *Body;
+
+    void (*SetStatus)(Response *r, char *rstatus);
+    void (*SetStatusCode)(Response *r, int statusCode);
     void (*SetHeader)(Response *r, char *name, char *val);
-    void (*SetBody)(Response *r, char *body);
+    void (*WriteBody)(Response *r, char *contents);
 };
 
-void Response_SetStatusCode(int statusCode);
+void Response_SetStatus(Response *r, char *rstatus);
 
-void Response_SetBody(Response *r, char *body);
+void Response_SetStatusCode(Response *r, int statusCode);
+
+void Response_WriteBody(Response *r, char *contents);
 
 void Response_SetHeader(Response *r, char *name, char *val);
 
