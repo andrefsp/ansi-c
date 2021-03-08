@@ -1,3 +1,6 @@
+#ifndef _HELLO_POINT_C
+#define _HELLO_POINT_C
+
 #include "gc.h"
 #include "point.h"
 #include <stdio.h>
@@ -28,3 +31,5 @@ Point *NewPoint(float x, float y) {
     p->Dist = Point_Dist;
     return p;
 }
+
+#endif

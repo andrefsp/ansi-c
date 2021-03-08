@@ -1,14 +1,17 @@
+#ifndef _HELLO_SERVER_C
+#define _HELLO_SERVER_C
+
 #include "gc.h"
 #include "server.h"
 
 
-int Stop(Server *s) {
+int Server_Stop(Server *s) {
     shutdown(s->socket_fd, SHUT_RDWR);
     close(s->socket_fd);
     return 0;
 }
 
-int Start(Server *s) {
+int Server_Start(Server *s) {
     int opt = 1;
 
 	s->socket_fd = socket(AF_INET , SOCK_STREAM , 0);
@@ -40,7 +43,7 @@ int listenLoop(Server *s) {
     
 }
 
-int Listen(Server *s) {
+int Server_Listen(Server *s) {
     char buffer[1024] = {0};
 
     int addrlen = sizeof(*(s->address)); 
@@ -66,8 +69,10 @@ int Listen(Server *s) {
 Server *NewServer(int port) {
     Server *s = GC_MALLOC(sizeof(Server));
     s->port = port;
-    s->Start = Start;
-    s->Stop = Stop;
-    s->Listen = Listen;
+    s->Start = Server_Start;
+    s->Stop = Server_Stop;
+    s->Listen = Server_Listen;
     return s;
 }
+
+#endif

@@ -1,25 +1,29 @@
+#ifndef _HELLO_REQUEST_C
+#define _HELLO_REQUEST_C
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+
 #include "gc.h"
 #include "curl/curl.h"
 #include "request.h"
 
 
-void SetTimeout(Request *r, long timeout) {
+void Request_SetTimeout(Request *r, long timeout) {
     curl_easy_setopt(r->curl, CURLOPT_TIMEOUT, timeout);
 }
 
-void SetConnectTimeout(Request *r, long timeout) {
+void Request_SetConnectTimeout(Request *r, long timeout) {
     curl_easy_setopt(r->curl, CURLOPT_CONNECTTIMEOUT, timeout);
 }
 
-void SetBody(Request *r, char *body) {
+void Request_SetBody(Request *r, char *body) {
     curl_easy_setopt(r->curl, CURLOPT_POSTFIELDS, body);
 }
 
-void SetHeader(Request *r, char *name, char *val) {
+void Request_SetHeader(Request *r, char *name, char *val) {
     char *header = GC_MALLOC((strlen(name)+strlen(val)+4)*sizeof(char));
     header = strcat(header, name);
     header = strcat(header, ": ");
@@ -40,7 +44,7 @@ static size_t _responseHeaderHandler(void *contents, size_t size, size_t nmemb, 
 }
 
 
-void Do(Request *r) {
+void Request_Do(Request *r) {
     // TODO(andrefsp): Create response object here and return it!
 
     curl_easy_setopt(r->curl, CURLOPT_NOPROGRESS, 1L);
@@ -69,11 +73,14 @@ Request *NewRequest(char *method, char *url) {
     r->url = url;
     curl_easy_setopt(r->curl, CURLOPT_URL, r->url);
 
-    r->SetTimeout = SetTimeout;
-    r->SetConnectTimeout = SetConnectTimeout;
-    r->SetBody = SetBody;
-    r->SetHeader = SetHeader;
-    r->Do = Do;
+    r->SetTimeout = Request_SetTimeout;
+    r->SetConnectTimeout = Request_SetConnectTimeout;
+    r->SetBody = Request_SetBody;
+    r->SetHeader = Request_SetHeader;
+    r->Do = Request_Do;
 
     return r;
 }
+
+
+#endif

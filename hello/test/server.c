@@ -1,6 +1,5 @@
-#include <stdio.h>
 #include <assert.h>
-#include "../src/server.c"
+#include "../src/hello.c"
 
 
 void test_server_star_stop(void) {

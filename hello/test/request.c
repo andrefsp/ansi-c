@@ -1,8 +1,5 @@
-#include <stdio.h>
 #include <assert.h>
-#include <string.h>
-#include "curl/curl.h"
-#include "../src/request.c"
+#include "../src/hello.c"
 
 
 void test_new_request(void) {

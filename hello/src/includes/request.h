@@ -1,7 +1,8 @@
+#ifndef _HELLO_REQUEST_H
+#define _HELLO_REQUEST_H
+
 #include "curl/curl.h"
 
-#ifndef REQUEST_H
-#define REQUEST_H
 
 typedef struct Request Request;
 
@@ -20,20 +21,17 @@ struct Request {
 };
 
 
-void SetBody(Request *r, char *body);
+void Request_SetBody(Request *r, char *body);
 
-void SetHeader(Request *r, char *name, char *val);
+void Request_SetHeader(Request *r, char *name, char *val);
 
-void SetTimeout(Request *r, long timeout);
+void Request_SetTimeout(Request *r, long timeout);
 
-void SetConnectTimeout(Request *r, long timeout);
+void Request_SetConnectTimeout(Request *r, long timeout);
 
-
-void Do(Request *r); 
-
+void Request_Do(Request *r); 
 
 // Constructor
 Request *NewRequest();
-
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef POINT_H
-#define POINT_H
+#ifndef _HELLO_POINT_H
+#define _HELLO_POINT_H
 
 typedef struct Point Point;
 
