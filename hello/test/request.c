@@ -6,14 +6,16 @@
 
 
 void test_new_request(void) {
-    Request *req = NewRequest("GET", "http://localhost:7777");
+    char *url = "http://localhost:7777";
+    Request *req = NewRequest("GET", url);
  
-    assert(("url", strcmp(req->url, "http://localhost:7777") == 0));
+    assert(("url", strcmp(req->url, url) == 0));
     assert(("method", strcmp(req->method, "GET") == 0));
 
     req->SetTimeout(req, 2);
     req->SetHeader(req, "Authorization", "Bearer sometoken");
-    req->SetHeader(req, "X-Context", "Some context"); 
+    req->SetHeader(req, "Content-type", "application/json");
+    req->SetBody(req, "{\"a\": 1}");
 
     req->Do(req);
 }

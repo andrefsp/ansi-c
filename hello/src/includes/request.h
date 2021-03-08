@@ -13,14 +13,21 @@ struct Request {
     char *url;
 
     void (*SetHeader)(Request *r, char *name, char *val);
-
+    void (*SetBody)(Request *r, char *body);
     void (*SetTimeout)(Request *r, long timeout);
+    void (*SetConnectTimeout)(Request *r, long timeout);
     void (*Do)(Request *r);
 };
+
+
+void SetBody(Request *r, char *body);
 
 void SetHeader(Request *r, char *name, char *val);
 
 void SetTimeout(Request *r, long timeout);
+
+void SetConnectTimeout(Request *r, long timeout);
+
 
 void Do(Request *r); 
 
