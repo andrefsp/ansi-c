@@ -8,6 +8,7 @@
 #include "point.h"
 #include "resonse.h"
 #include "request.h"
+#include "http_client.h"
 #include "server.h"
 
 #endif

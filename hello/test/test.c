@@ -5,6 +5,8 @@
 #include "response.c"
 #include "hashmap.c"
 #include "string_utils.c"
+#include "http_client.c"
+
 
 int main(void) {
     test_hashmap();
@@ -14,6 +16,8 @@ int main(void) {
     test_server();
     test_response();
 
-    test_request(); // Currently failing!
+    test_request();
+
+    test_http_client();
     return 0;
 }

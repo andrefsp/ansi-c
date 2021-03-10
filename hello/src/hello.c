@@ -8,5 +8,6 @@
 #include "request.c"
 #include "response.c"
 #include "server.c"
+#include "http_client.c"
 
 #endif
