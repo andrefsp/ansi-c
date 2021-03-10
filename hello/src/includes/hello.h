@@ -3,6 +3,7 @@
 
 // Include for all header files
 #include "hashmap.h"
+#include "string_utils.h"
 
 #include "point.h"
 #include "resonse.h"

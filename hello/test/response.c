@@ -4,10 +4,11 @@
 
 void test_response_status_code() {
     Response *res = NewResponse();
-    res->SetStatus(res, "OK");
+    char *s = "OK";
+    res->SetStatus(res, s);
     res->SetStatusCode(res, 200);
     assert(("status code", res->StatusCode == 200));
-    assert(("status", res->Status == "OK"));
+    assert(("status", strcmp(res->Status, "OK") == 0));
 }
 
 
@@ -23,7 +24,28 @@ void test_response_write_body() {
 }
 
 
+void test_response_set_headers() {
+    Response *res = NewResponse();
+    res->SetHeader(res, "Content-Type", "text/json");
+    res->SetHeader(res, "Etag", "thisisatag");
+
+    char *etag = res->GetHeader(res, "Etag");
+    char *ctype = res->GetHeader(res, "Content-Type");
+
+    
+    assert(("header size", res->Headers->Size == 2));
+
+    assert(("etag header not nil", etag));
+    assert(("ctype header not nil", ctype));
+
+    assert(("etag check", strcmp(etag, "thisisatag") == 0));
+    assert(("ctype check", strcmp(ctype, "text/json") == 0));
+
+}
+
+
 void test_response() {
     test_response_status_code();
-    test_response_write_body(); 
+    test_response_write_body();
+    test_response_set_headers();
 }

@@ -3,6 +3,7 @@
 
 #include "curl/curl.h"
 
+#include "response.h"
 
 typedef struct Request Request;
 
@@ -17,7 +18,7 @@ struct Request {
     void (*SetBody)(Request *r, char *body);
     void (*SetTimeout)(Request *r, long timeout);
     void (*SetConnectTimeout)(Request *r, long timeout);
-    void (*Do)(Request *r);
+    Response *(*Do)(Request *r);
 };
 
 
@@ -29,7 +30,7 @@ void Request_SetTimeout(Request *r, long timeout);
 
 void Request_SetConnectTimeout(Request *r, long timeout);
 
-void Request_Do(Request *r); 
+Response *Request_Do(Request *r); 
 
 // Constructor
 Request *NewRequest();

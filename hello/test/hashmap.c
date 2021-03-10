@@ -65,13 +65,31 @@ void test_hashmap_get_and_set_ints() {
     assert(("key 1 equal", *value1 == 10));
 
     int *value2 = map->Get(map, "key2"); 
-    assert(("key 2 equal", *value1 == 20));
+    assert(("key 2 equal", *value2 == 20));
 }
 
+
+void test_hashmap_strange_combinations() {
+    Hashmap *map = NewHashmap();
+    
+    map->Set(map, "Content-Type", "text/html");
+    map->Set(map, "X-Custom", "myheader");
+    map->Set(map, "ETag", "anothra");
+
+    char *value1 = map->Get(map, "Content-Type");
+    char *value2 = map->Get(map, "X-Custom");
+    char *value3 = map->Get(map, "ETag");
+
+    assert(("ctype check", strcmp(value1, "text/html") == 0));
+    assert(("custom check", strcmp(value2, "myheader") == 0));
+    assert(("another check", strcmp(value3, "anothra") == 0));
+}
 
 void test_hashmap(void) {
     test_hashmap_construct();
     test_hashmap_get_and_set(); 
     test_hashmap_get_and_set_delete();
-    test_hashmap_multiple_set_same_key(); 
+    test_hashmap_multiple_set_same_key();
+    test_hashmap_get_and_set_ints();
+    test_hashmap_strange_combinations(); 
 }

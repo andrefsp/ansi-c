@@ -13,6 +13,7 @@ void *Hashmap_Get(Hashmap *map, void *lkey) {
             return map->Items[i]->data;
         }
     }
+
     return NULL;
 }
 
@@ -23,9 +24,9 @@ void Hashmap_Set(Hashmap *map, void *lkey, void *value) {
             return;
         }
     }
-
+    
     DataItem *item = GC_MALLOC(sizeof(DataItem));
-    item->key = lkey;
+    item->key = lkey; 
     item->data = value;
     
     map->Items[map->Size] = item;
