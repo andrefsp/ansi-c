@@ -7,8 +7,8 @@ void test_http_client_new_request(void) {
     char *url = "http://localhost:7777";
     Request *req = NewRequest("GET", url);
  
-    assert(("url", strcmp(req->url, url) == 0));
-    assert(("method", strcmp(req->method, "GET") == 0));
+    assert(((void)"url", strcmp(req->url, url) == 0));
+    assert(((void)"method", strcmp(req->method, "GET") == 0));
 
     req->SetTimeout(req, 2);
     req->SetHeader(req, "Authorization", "Bearer sometoken");
@@ -19,7 +19,7 @@ void test_http_client_new_request(void) {
 
     Response *res = client->Do(client, req);
     
-    assert(("body size", strlen(res->Body) > 0));
+    assert(((void)"body size", strlen(res->Body) > 0));
 }
 
 
@@ -32,8 +32,8 @@ void test_http_client_response_status_header_handler(void) {
     _responseHeaderHandler(statusHeader, 1, strlen(statusHeader), res);
     _responseHeaderHandler(lastHeader, 1, strlen(lastHeader), res);
 
-    assert(("status code", res->StatusCode == 200));
-    assert(("status", strcmp(res->Status, "OK") == 0));    
+    assert(((void)"status code", res->StatusCode == 200));
+    assert(((void)"status", strcmp(res->Status, "OK") == 0));    
 }
 
 
@@ -49,16 +49,16 @@ void test_http_client_response_header_handler(void) {
     _responseHeaderHandler(etagHeader, 1, strlen(etagHeader), res);
     _responseHeaderHandler(lastHeader, 1, strlen(lastHeader), res);
 
-    assert(("status code", res->StatusCode == 200));
-    assert(("status", strcmp(res->Status, "OK") == 0));
+    assert(((void)"status code", res->StatusCode == 200));
+    assert(((void)"status", strcmp(res->Status, "OK") == 0));
     
     char *ctypeh = res->GetHeader(res, "Content-Type");
-    assert(("ctype header not nil", ctypeh));
-    assert(("ctype header", strcmp(ctypeh, "text/html") == 0));
+    assert(((void)"ctype header not nil", ctypeh));
+    assert(((void)"ctype header", strcmp(ctypeh, "text/html") == 0));
 
     char *etagh = res->GetHeader(res, "ETag");
-    assert(("custom header not nil", etagh));
-    assert(("custom header", strcmp(etagh, "W/\"10-/VnJyQBB0+b7i4NY83P42KKVWsM\"") == 0));
+    assert(((void)"custom header not nil", etagh));
+    assert(((void)"custom header", strcmp(etagh, "W/\"10-/VnJyQBB0+b7i4NY83P42KKVWsM\"") == 0));
 }
 
 

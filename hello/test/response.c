@@ -7,20 +7,20 @@ void test_response_status_code() {
     char *s = "OK";
     res->SetStatus(res, s);
     res->SetStatusCode(res, 200);
-    assert(("status code", res->StatusCode == 200));
-    assert(("status", strcmp(res->Status, "OK") == 0));
+    assert(((void)"status code", res->StatusCode == 200));
+    assert(((void)"status", strcmp(res->Status, "OK") == 0));
 }
 
 
 void test_response_write_body() {
     Response *res = NewResponse();
     res->SetStatusCode(res, 200);
-    assert(("status code", res->StatusCode == 200));
+    assert(((void)"status code", res->StatusCode == 200));
 
     res->WriteBody(res, "this");
     res->WriteBody(res, "_is_\n"); 
     res->WriteBody(res, "data");
-    assert(("body", strcmp(res->Body, "this_is_\ndata") == 0));
+    assert(((void)"body", strcmp(res->Body, "this_is_\ndata") == 0));
 }
 
 
@@ -33,13 +33,13 @@ void test_response_set_headers() {
     char *ctype = res->GetHeader(res, "Content-Type");
 
     
-    assert(("header size", res->Headers->Size == 2));
+    assert(((void)"header size", res->Headers->Size == 2));
 
-    assert(("etag header not nil", etag));
-    assert(("ctype header not nil", ctype));
+    assert(((void)"etag header not nil", etag));
+    assert(((void)"ctype header not nil", ctype));
 
-    assert(("etag check", strcmp(etag, "thisisatag") == 0));
-    assert(("ctype check", strcmp(ctype, "text/json") == 0));
+    assert(((void)"etag check", strcmp(etag, "thisisatag") == 0));
+    assert(((void)"ctype check", strcmp(ctype, "text/json") == 0));
 
 }
 

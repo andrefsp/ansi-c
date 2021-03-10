@@ -88,8 +88,9 @@ char **str_tokenize(char *text, const char *sep) {
 
 
 char **str_n_tokenize(char *text, const char *sep, int n) {
-    if (n < 1) 
+    if (n < 1) { 
         return str_tokenize(text, sep);
+	}
 
 	const int len = strlen(text);
 

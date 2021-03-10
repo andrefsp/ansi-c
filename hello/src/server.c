@@ -12,8 +12,6 @@ int Server_Stop(Server *s) {
 }
 
 int Server_Start(Server *s) {
-    int opt = 1;
-
 	s->socket_fd = socket(AF_INET , SOCK_STREAM , 0);
     if (s->socket_fd == -1) {
         return s->socket_fd;
@@ -40,7 +38,7 @@ int Server_Start(Server *s) {
 }
 
 int listenLoop(Server *s) {
-    
+    return 0;
 }
 
 int Server_Listen(Server *s) {
@@ -55,7 +53,7 @@ int Server_Listen(Server *s) {
             return -1;
         }
         int valread = read(socket , buffer, 1024);
-        printf("%s\n", buffer);
+        printf("'%d' : '%s'\n",valread,  buffer);
 
         char *message = "HTTP/1.1 200 OK\r\n";
         if (send(socket, message, strlen(message), 0) < 0) {
