@@ -4,16 +4,16 @@
 #include "request.c"
 #include "response.c"
 #include "hashmap.c"
-
+#include "string_utils.c"
 
 int main(void) {
-    GC_INIT();
-
     test_hashmap();
+    test_string_utils();
     test_point();
 
-    test_server();    
-    test_request();
+    test_server();
     test_response();
+
+    test_request(); // Currently failing!
     return 0;
 }

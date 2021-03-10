@@ -16,4 +16,7 @@ char *str_rstrip(char *text, char ch);
 // full string strip
 char *str_strip(char *text, char ch);
 
+// clean cariage returns
+char *str_clean(char *text);
+
 #endif

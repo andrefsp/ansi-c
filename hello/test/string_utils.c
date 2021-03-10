@@ -2,6 +2,17 @@
 #include <string.h>
 #include "../src/hello.c"
 
+void test_str_clean() { 
+    char *res = str_clean("type\r\n");
+    assert(strcmp(res, "type") == 0);
+
+    res = str_clean("type\r");
+    assert(strcmp(res, "type") == 0);
+
+    res = str_clean("type\n");
+    assert(strcmp(res, "type") == 0);
+}
+
 
 void test_str_lstrip() {
     char *text = "  this is a test";
@@ -16,6 +27,32 @@ void test_str_rstrip() {
 
     assert(strcmp(res, "this is a test") == 0);
 }
+
+void test_str_rstrip_new_lines() {
+    char *text = "Content-Type: text/html\n";
+    char *res = str_rstrip(text, '\n');
+    
+    assert(strcmp(res, "Content-Type: text/html") == 0);
+}
+
+void test_str_rstrip_carrige_return() {
+    char *text = "Content-Type: text/html\r";
+    char *res = str_rstrip(text, '\r');
+    
+    assert(strcmp(res, "Content-Type: text/html") == 0);
+}
+
+
+void test_str_rstrip_carrige_return_new_lines() {
+    char *text = str_clean("Content-Type: text/html\r\n");
+    char *res = str_rstrip(text, '\n');
+    
+    res = str_rstrip(text, '\r');
+    
+    
+    assert(strcmp(res, "Content-Type: text/html") == 0);
+}
+
 
 void test_str_strip() {
     char *text = "  this is a test   ";
@@ -94,7 +131,12 @@ void test_string_utils() {
     test_str_n_tokenize_no_char_to_break(); 
     test_str_n_tokenize_more_breaks_than_items(); 
 
+    test_str_clean();
+
     test_str_lstrip();
+    test_str_rstrip_new_lines();
+    test_str_rstrip_carrige_return(); 
+    test_str_rstrip_carrige_return_new_lines(); 
     test_str_rstrip();
     test_str_strip(); 
 }

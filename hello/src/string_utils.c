@@ -6,6 +6,27 @@
 #include "gc.h"
 #include "string_utils.h"
 
+
+char *str_clean(char *text) {
+	const int len = strlen(text);
+	char *string = GC_MALLOC(len*sizeof(char));
+	
+	int si = 0;
+	int ti = 0;
+	while (ti < len) {
+		if (text[ti] == '\r' || text[ti] == '\n') {
+			ti +=1;
+			continue;
+		}
+		string[si] = text[ti];
+		ti++;
+		si++;
+	}
+	string[si] = '\0';
+	return string;
+}
+
+
 char *str_strip(char *text, char ch) {
     char *lstrp = str_lstrip(text, ch);
     char *strip = str_rstrip(lstrp, ch);
@@ -16,27 +37,25 @@ char *str_strip(char *text, char ch) {
 
 char *str_rstrip(char *text, char ch) {
     const int len = strlen(text);
-    int x = len;
-    while (text[--x] == ch) {}
+    int x = len-1;
+    while (text[x] == ch) { x--; }
 
-    char *string = GC_MALLOC((len-x)*sizeof(char));
+    char *string = GC_MALLOC(len*sizeof(char));
 
     for (int i = 0; i <= x; i++)
         string[i] = text[i];
-   
     return string;
 }
 
 char *str_lstrip(char *text, char ch) { 
     int x = 0;
-    while (text[++x] == ch) {}
+    while (text[x] == ch) { x++; }
 
     const int len = strlen(text);
-    char *string = GC_MALLOC((len-x)*sizeof(char));
+    char *string = GC_MALLOC(len*sizeof(char));
 
     for (int i = x; i < len; i++)
         string[i-x] = text[i];
-    
     return string;
 }
 

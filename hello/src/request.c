@@ -10,6 +10,9 @@
 #include "curl/curl.h"
 #include "request.h"
 
+#include "response.c"
+#include "string_utils.c"
+
 
 void Request_SetTimeout(Request *r, long timeout) {
     curl_easy_setopt(r->curl, CURLOPT_TIMEOUT, timeout);
@@ -34,28 +37,60 @@ void Request_SetHeader(Request *r, char *name, char *val) {
 }
 
 static size_t _responseBodyHandler(void *contents, size_t size, size_t nmemb, void *userp) {
-    printf("body>> %d, %s\n", strlen(contents), contents);
-    return strlen(contents);
+    Response *res = userp;
+    res->WriteBody(res, (char *)contents);
+    return nmemb;
 }
 
 static size_t _responseHeaderHandler(void *contents, size_t size, size_t nmemb, void *userp) {
-    printf("headers>> %d,  %s", strlen(contents), contents);
-    return strlen(contents);
+    char **parts = GC_MALLOC(0);
+    char *header = GC_MALLOC(nmemb*sizeof(char));
+
+    strcpy(header, contents);
+    header = str_clean(header);
+
+    if (strlen(header) < 1) {
+        goto free;
+    }
+
+    Response *res = (Response *)userp;
+    if (!res->StatusCode) {
+        // TODO(andrefsp): Validate status header.
+        // There should be an error in case an invalid status header is sent
+        parts = str_tokenize(header, " ");
+        res->SetStatusCode(res, atoi(parts[1]));
+        res->SetStatus(res, parts[2]);
+    } else {
+        parts = str_n_tokenize(header, ":", 1);
+        
+        char *hname = str_strip(parts[0], ' ');
+        char *hval = str_strip(parts[1], ' ');
+
+        res->SetHeader(res, hname, hval); 
+    }
+
+free:
+    GC_FREE(header); 
+    GC_FREE(parts);
+
+    return nmemb;
 }
 
 
-void Request_Do(Request *r) {
-    // TODO(andrefsp): Create response object here and return it!
-
+Response *Request_Do(Request *r) {
     curl_easy_setopt(r->curl, CURLOPT_NOPROGRESS, 1L);
 
     curl_easy_setopt(r->curl, CURLOPT_HEADERFUNCTION, _responseHeaderHandler);
     curl_easy_setopt(r->curl, CURLOPT_WRITEFUNCTION, _responseBodyHandler);
-    
-    curl_easy_setopt(r->curl, CURLOPT_HEADERDATA, NULL);
-    curl_easy_setopt(r->curl, CURLOPT_WRITEDATA, NULL);
+   
+    Response *res = NewResponse();
+
+    curl_easy_setopt(r->curl, CURLOPT_HEADERDATA, res);
+    curl_easy_setopt(r->curl, CURLOPT_WRITEDATA, res);
 
     CURLcode response = curl_easy_perform(r->curl);
+
+    return res;
 } 
 
 
