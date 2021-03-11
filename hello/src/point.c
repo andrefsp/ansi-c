@@ -16,10 +16,8 @@ char *Point_String(Point *self) {
 }
 
 
-float *Point_Dist(Point *self, Point *other) {
-    float *dist = GC_MALLOC(sizeof(float));
-    *dist = (self->X - other->X) + (self->Y - other->Y);
-    return dist;
+float Point_Dist(Point *self, Point *other) {
+    return (self->X - other->X) + (self->Y - other->Y);
 }
 
 
