@@ -8,22 +8,22 @@
 
 
 char *str_clean(char *text) {
-	const int len = strlen(text);
-	char *string = GC_MALLOC(len*sizeof(char));
-	
-	int si = 0;
-	int ti = 0;
-	while (ti < len) {
-		if (text[ti] == '\r' || text[ti] == '\n') {
-			ti +=1;
-			continue;
-		}
-		string[si] = text[ti];
-		ti++;
-		si++;
-	}
-	string[si] = '\0';
-	return string;
+    const int len = strlen(text);
+    char *string = GC_MALLOC(len*sizeof(char));
+    
+    int si = 0;
+    int ti = 0;
+    while (ti < len) {
+        if (text[ti] == '\r' || text[ti] == '\n') {
+            ti +=1;
+            continue;
+        }
+        string[si] = text[ti];
+        ti++;
+        si++;
+    }
+    string[si] = '\0';
+    return string;
 }
 
 
@@ -40,27 +40,32 @@ char *str_rstrip(char *text, char ch) {
     int x = len-1;
     while (text[x] == ch) { x--; }
 
-    char *string = GC_MALLOC(len*sizeof(char));
-
-    for (int i = 0; i <= x; i++)
+    char *string = GC_MALLOC(x*sizeof(char));
+    for (int i = 0; i <= x; i++) {
         string[i] = text[i];
+    }
+    string[x+1] = '\0';
     return string;
 }
 
 char *str_lstrip(char *text, char ch) { 
     int x = 0;
     while (text[x] == ch) { x++; }
-
+    
     const int len = strlen(text);
-    char *string = GC_MALLOC(len*sizeof(char));
+    const int tlen = (len-x);
+    char *string = GC_MALLOC(tlen*sizeof(char));
 
-    for (int i = x; i < len; i++)
+    for (int i = x; i < len; i++) {
         string[i-x] = text[i];
+    }
+
+    string[tlen] = '\0';
     return string;
 }
 
 char **str_tokenize(char *text, const char *sep) {
-	const int len = strlen(text);
+    const int len = strlen(text);
 
     char string[len];
     strcpy(string, text);
@@ -90,9 +95,9 @@ char **str_tokenize(char *text, const char *sep) {
 char **str_n_tokenize(char *text, const char *sep, int n) {
     if (n < 1) { 
         return str_tokenize(text, sep);
-	}
+    }
 
-	const int len = strlen(text);
+    const int len = strlen(text);
 
     char string[len];
     strcpy(string, text);

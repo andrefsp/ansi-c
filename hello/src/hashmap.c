@@ -13,7 +13,6 @@ void *Hashmap_Get(Hashmap *map, void *lkey) {
             return map->Items[i]->data;
         }
     }
-
     return NULL;
 }
 

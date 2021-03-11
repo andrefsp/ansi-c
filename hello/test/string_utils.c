@@ -17,7 +17,7 @@ void test_str_clean() {
 void test_str_lstrip() {
     char *text = "  this is a test";
     char *res = str_lstrip(text, ' ');
-
+    
     assert(strcmp(res, "this is a test") == 0);
 }
 
@@ -64,7 +64,7 @@ void test_str_strip() {
 void test_str_tokenize() { 
     char *text = "this is a test";
     char **parts = str_tokenize(text, " ");
-   
+    
     assert(strcmp("this", parts[0]) == 0);
     assert(strcmp("is", parts[1]) == 0);   
     assert(strcmp("a", parts[2]) == 0);   

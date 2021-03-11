@@ -12,7 +12,7 @@ int Server_Stop(Server *s) {
 }
 
 int Server_Start(Server *s) {
-	s->socket_fd = socket(AF_INET , SOCK_STREAM , 0);
+    s->socket_fd = socket(AF_INET , SOCK_STREAM , 0);
     if (s->socket_fd == -1) {
         return s->socket_fd;
     }
