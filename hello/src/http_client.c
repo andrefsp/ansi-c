@@ -2,6 +2,7 @@
 
 #include "response.c"
 #include "request.c"
+#include "string_utils.c"
 
 
 static size_t _responseBodyHandler(void *contents, size_t size, size_t nmemb, void *userp) {

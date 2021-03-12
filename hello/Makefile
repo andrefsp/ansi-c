@@ -8,7 +8,7 @@ TEST_TARGET=${TEST_BIN}/test
 
 
 # pkg-config
-PKG_CONFIG=$$(pkg-config --cflags --libs bdw-gc,libcurl)
+PKG_CONFIG=$$(pkg-config --cflags --libs bdw-gc,libcurl,libuv)
 
 INCLUDE=-I${PROJECT_DIR}/src/includes
 

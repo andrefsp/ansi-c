@@ -2,70 +2,83 @@
 #define _HELLO_SERVER_C
 
 #include "gc.h"
+#include "uv.h"
 #include "server.h"
+
+#include "string_utils.c"
+#include "buffer_utils.c"
+
+
+void Server_Handler(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf) {
+    uv_write_t *req = GC_MALLOC(sizeof(uv_write_t));
+
+    if (nread == -1) {
+	    /* if (uv_last_error(loop).code != UV_EOF) { */
+	    /* } */
+	    uv_close((uv_handle_t *)stream, NULL);
+    }
+
+    uv_buf_t * resp = new_uv_buffer("HTTP/1.1 200 OK\r\n");
+
+    int r = uv_write(req, stream, resp, 1, NULL);
+
+    if (r) {
+	    /* error */
+    }
+
+    GC_FREE(buf->base);
+
+    uv_close((uv_handle_t *)stream, NULL);
+}
 
 
 int Server_Stop(Server *s) {
-    shutdown(s->socket_fd, SHUT_RDWR);
-    close(s->socket_fd);
+    uv_loop_close(Server_uv_loop);
     return 0;
 }
 
-int Server_Start(Server *s) {
-    s->socket_fd = socket(AF_INET , SOCK_STREAM , 0);
-    if (s->socket_fd == -1) {
-        return s->socket_fd;
+void Server_onConnection(uv_stream_t *server, int status) {
+    if (status < 0) {
+        fprintf(stderr, "New connection error %s\n", uv_strerror(status));
+        return;
     }
-   
+
+    uv_tcp_t *client = GC_MALLOC(sizeof(uv_tcp_t));
+    uv_tcp_init(Server_uv_loop, client);
+
+    if (uv_accept(server, (uv_stream_t*) client) == 0) {
+        uv_read_start((uv_stream_t*) client, h_buffer_alloc, Server_Handler);
+    } else {
+        uv_close((uv_handle_t *)client, NULL);
+    }
+}
+
+int Server_Start(Server *s) {
     s->address = GC_MALLOC(sizeof(*(s->address)));
     s->address->sin_family = AF_INET;
     s->address->sin_addr.s_addr = INADDR_ANY;
     s->address->sin_port = htons(s->port);
- 
-    int bindR = bind(
-        s->socket_fd, (struct sockaddr *)s->address, sizeof(*(s->address))
-    );
-    if (bindR < 0) {
-        return bindR;
-    } 
-   
-    int lRes = listen(s->socket_fd, 300);
-    if (lRes < 0) { 
-        return lRes;
-    } 
 
-    return 0;
-}
+    Server_uv_loop = uv_default_loop();
 
-int listenLoop(Server *s) {
-    return 0;
+    uv_ip4_addr("0.0.0.0", s->port, s->address); // Assign address
+
+    uv_tcp_init(Server_uv_loop, Server_uv_server);
+    uv_tcp_bind(Server_uv_server, (const struct sockaddr*)s->address, 0);
+
+    return uv_listen((uv_stream_t *)Server_uv_server, 128, Server_onConnection);
 }
 
 int Server_Listen(Server *s) {
-    char buffer[1024] = {0};
-
-    int addrlen = sizeof(*(s->address)); 
-    while (1) {
-        int socket = accept(
-            s->socket_fd, (struct sockaddr *)s->address, (socklen_t*)&addrlen
-        );
-        if (socket < 0) {
-            return -1;
-        }
-        int valread = read(socket , buffer, 1024);
-        printf("'%d' : '%s'\n",valread,  buffer);
-
-        char *message = "HTTP/1.1 200 OK\r\n";
-        if (send(socket, message, strlen(message), 0) < 0) {
-            printf("Failed to send!");
-        }
-        close(socket);
-    }
-    return 0;
+    return uv_run(Server_uv_loop, UV_RUN_DEFAULT);
 }
 
 Server *NewServer(int port) {
     Server *s = GC_MALLOC(sizeof(Server));
+
+    Server_uv_loop = GC_MALLOC(sizeof(uv_loop_t));
+    Server_uv_server = GC_MALLOC(sizeof(uv_tcp_t));
+
     s->port = port;
     s->Start = Server_Start;
     s->Stop = Server_Stop;

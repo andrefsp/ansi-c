@@ -15,7 +15,7 @@ void test_server_star_listen(void) {
     assert(s != NULL);
     
     assert(((void)"run server", s->Start(s) == 0));
-    //assert(("listen server", s->Listen(s) == 0));
+    //assert(((void)"listen server", s->Listen(s) == 0));
     assert(((void)"stop server", s->Stop(s) == 0));
 }
 

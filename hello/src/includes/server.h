@@ -4,14 +4,17 @@
 #include <sys/socket.h> 
 #include <netinet/in.h> 
 #include <unistd.h>
+#include "uv.h"
+
+
+uv_tcp_t *Server_uv_server;
+uv_loop_t *Server_uv_loop;
 
 
 typedef struct Server Server;
 
 struct Server {
     int port;
-   
-    int socket_fd;
     struct sockaddr_in *address;
 
     int (*Start)(Server *s);
