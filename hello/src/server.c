@@ -4,6 +4,7 @@
 #include "gc.h"
 #include "uv.h"
 #include "server.h"
+#include "hello.h"
 
 #include "string_utils.c"
 #include "buffer_utils.c"
@@ -13,29 +14,27 @@ void Server_Handler(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf) {
     uv_write_t *req = GC_MALLOC(sizeof(uv_write_t));
 
     if (nread == -1) {
-	    /* if (uv_last_error(loop).code != UV_EOF) { */
-	    /* } */
-	    uv_close((uv_handle_t *)stream, NULL);
+        /* if (uv_last_error(loop).code != UV_EOF) { */
+        /* } */
+        uv_close((uv_handle_t *)stream, NULL);
     }
 
-    uv_buf_t * resp = new_uv_buffer("HTTP/1.1 200 OK\r\n");
+    uv_buf_t *resp = new_uv_buffer("HTTP/1.1 200 OK\r\n");
 
-    int r = uv_write(req, stream, resp, 1, NULL);
+    int err = uv_write(req, stream, resp, 1, NULL);
 
-    if (r) {
-	    /* error */
+    if (err) {
+        fprintf(stderr, "Write error: %s\n", uv_strerror(err));
+        /* error */
     }
-
     GC_FREE(buf->base);
+    
+    GC_FREE(resp->base);
+    GC_FREE(resp);
 
     uv_close((uv_handle_t *)stream, NULL);
 }
 
-
-int Server_Stop(Server *s) {
-    uv_loop_close(Server_uv_loop);
-    return 0;
-}
 
 void Server_onConnection(uv_stream_t *server, int status) {
     if (status < 0) {
@@ -53,7 +52,11 @@ void Server_onConnection(uv_stream_t *server, int status) {
     }
 }
 
-int Server_Start(Server *s) {
+void Server_Listen(void *arg) {
+    uv_run(Server_uv_loop, UV_RUN_DEFAULT);
+}
+
+int Server_Start(Server *s, int block) {
     s->address = GC_MALLOC(sizeof(*(s->address)));
     s->address->sin_family = AF_INET;
     s->address->sin_addr.s_addr = INADDR_ANY;
@@ -62,23 +65,36 @@ int Server_Start(Server *s) {
     Server_uv_loop = uv_default_loop();
 
     uv_ip4_addr("0.0.0.0", s->port, s->address); // Assign address
-
     uv_tcp_init(Server_uv_loop, Server_uv_server);
     uv_tcp_bind(Server_uv_server, (const struct sockaddr*)s->address, 0);
 
-    return uv_listen((uv_stream_t *)Server_uv_server, 128, Server_onConnection);
+    int err = uv_listen((uv_stream_t *)Server_uv_server, 128, Server_onConnection);
+    if (err) {
+        fprintf(stderr, "Error when listening: %s\n", uv_strerror(err));
+        return err;
+    }
+    
+    uv_thread_t t_id;
+    uv_thread_create(&t_id, s->Listen, s);
+    if (block) {
+        uv_thread_join(&t_id);
+    }
+
+    return 0;
 }
 
-int Server_Listen(Server *s) {
-    return uv_run(Server_uv_loop, UV_RUN_DEFAULT);
+int Server_Stop(Server *s) {
+    uv_stop(Server_uv_loop);
+    uv_loop_close(Server_uv_loop);
+    return 0;
 }
+
 
 Server *NewServer(int port) {
-    Server *s = GC_MALLOC(sizeof(Server));
-
     Server_uv_loop = GC_MALLOC(sizeof(uv_loop_t));
     Server_uv_server = GC_MALLOC(sizeof(uv_tcp_t));
 
+    Server *s = GC_MALLOC(sizeof(Server));
     s->port = port;
     s->Start = Server_Start;
     s->Stop = Server_Stop;

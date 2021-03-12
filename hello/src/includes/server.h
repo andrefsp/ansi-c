@@ -17,16 +17,16 @@ struct Server {
     int port;
     struct sockaddr_in *address;
 
-    int (*Start)(Server *s);
+    int (*Start)(Server *s, int block);
     int (*Stop)(Server *s);
-    int (*Listen)(Server *s);
+    void (*Listen)(void *s);
 };
 
-int Server_Start(Server *s);
+int Server_Start(Server *s, int block);
 
 int Server_Stop(Server *s);
 
-int Server_Listen(Server *s);
+void Server_Listen(void *s);
 
 // Constructor
 Server *NewServer(int port);
