@@ -11,6 +11,10 @@
 
 
 void Server_Handler(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf) {
+    //Server *s = stream->data;
+    // TODO: (andrefsp) :: User server for handlers at this point.
+    // 
+
     uv_write_t *req = GC_MALLOC(sizeof(uv_write_t));
 
     if (nread == -1) {
@@ -41,8 +45,10 @@ void Server_onConnection(uv_stream_t *server, int status) {
         fprintf(stderr, "New connection error %s\n", uv_strerror(status));
         return;
     }
-
+    
     uv_tcp_t *client = GC_MALLOC(sizeof(uv_tcp_t));
+    client->data = server->data; // data is a pointer to the `Server` object
+
     uv_tcp_init(Server_uv_loop, client);
 
     if (uv_accept(server, (uv_stream_t*) client) == 0) {
@@ -91,14 +97,17 @@ int Server_Stop(Server *s) {
 
 
 Server *NewServer(int port) {
-    Server_uv_loop = GC_MALLOC(sizeof(uv_loop_t));
-    Server_uv_server = GC_MALLOC(sizeof(uv_tcp_t));
 
     Server *s = GC_MALLOC(sizeof(Server));
     s->port = port;
     s->Start = Server_Start;
     s->Stop = Server_Stop;
     s->Listen = Server_Listen;
+
+    Server_uv_loop = GC_MALLOC(sizeof(uv_loop_t));
+    Server_uv_server = GC_MALLOC(sizeof(uv_tcp_t));
+    Server_uv_server->data = s; // Pass server pointer to uv_loop handlers
+
     return s;
 }
 

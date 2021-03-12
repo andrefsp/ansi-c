@@ -6,6 +6,7 @@
 #include "hashmap.c"
 #include "string_utils.c"
 #include "http_client.c"
+#include "closure.c"
 
 
 int main(void) {
@@ -19,5 +20,7 @@ int main(void) {
     test_request();
 
     test_http_client();
+
+    test_closure();
     return 0;
 }
