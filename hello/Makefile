@@ -23,7 +23,7 @@ clean:
 
 # commands: c testing
 compile-test: clean build
-	gcc -Wall -x c -std=gnu18 ${PKG_CONFIG} -ldl -lpthread ${INCLUDE} -g ${TEST_DIR}/test.c -o ${TEST_TARGET}
+	gcc -Wall -x c -std=gnu18 ${PKG_CONFIG} -ldl ${INCLUDE} -g ${TEST_DIR}/test.c -o ${TEST_TARGET}
 
 
 run-test: clean compile-test

@@ -45,11 +45,14 @@ void Server_onConnection(uv_stream_t *server, int status) {
         fprintf(stderr, "New connection error %s\n", uv_strerror(status));
         return;
     }
-    
+
+    Server *s = server->data;
+
     uv_tcp_t *client = GC_MALLOC(sizeof(uv_tcp_t));
     client->data = server->data; // data is a pointer to the `Server` object
 
-    uv_tcp_init(Server_uv_loop, client);
+
+    uv_tcp_init(s->Server_uv_loop, client);
 
     if (uv_accept(server, (uv_stream_t*) client) == 0) {
         uv_read_start((uv_stream_t*) client, h_buffer_alloc, Server_Handler);
@@ -59,7 +62,8 @@ void Server_onConnection(uv_stream_t *server, int status) {
 }
 
 void Server_Listen(void *arg) {
-    uv_run(Server_uv_loop, UV_RUN_DEFAULT);
+    Server *s = arg;
+    uv_run(s->Server_uv_loop, UV_RUN_DEFAULT);
 }
 
 int Server_Start(Server *s, int block) {
@@ -68,13 +72,13 @@ int Server_Start(Server *s, int block) {
     s->address->sin_addr.s_addr = INADDR_ANY;
     s->address->sin_port = htons(s->port);
 
-    Server_uv_loop = uv_default_loop();
+    uv_loop_init(s->Server_uv_loop); 
 
     uv_ip4_addr("0.0.0.0", s->port, s->address); // Assign address
-    uv_tcp_init(Server_uv_loop, Server_uv_server);
-    uv_tcp_bind(Server_uv_server, (const struct sockaddr*)s->address, 0);
+    uv_tcp_init(s->Server_uv_loop, s->Server_uv_server);
+    uv_tcp_bind(s->Server_uv_server, (const struct sockaddr*)s->address, 0);
 
-    int err = uv_listen((uv_stream_t *)Server_uv_server, 128, Server_onConnection);
+    int err = uv_listen((uv_stream_t *)s->Server_uv_server, 128, Server_onConnection);
     if (err) {
         fprintf(stderr, "Error when listening: %s\n", uv_strerror(err));
         return err;
@@ -89,25 +93,32 @@ int Server_Start(Server *s, int block) {
     return 0;
 }
 
+void Server_close_handler(uv_handle_t *handler, void *arg) {
+    if (!uv_is_closing(handler)) {
+        uv_close(handler, NULL);
+    }
+}
+
 int Server_Stop(Server *s) {
-    uv_stop(Server_uv_loop);
-    uv_loop_close(Server_uv_loop);
+    uv_stop(s->Server_uv_loop);
+    uv_loop_close(s->Server_uv_loop);
+
+    uv_walk(s->Server_uv_loop, Server_close_handler, s);
+
     return 0;
 }
 
 
 Server *NewServer(int port) {
-
     Server *s = GC_MALLOC(sizeof(Server));
     s->port = port;
     s->Start = Server_Start;
     s->Stop = Server_Stop;
     s->Listen = Server_Listen;
 
-    Server_uv_loop = GC_MALLOC(sizeof(uv_loop_t));
-    Server_uv_server = GC_MALLOC(sizeof(uv_tcp_t));
-    Server_uv_server->data = s; // Pass server pointer to uv_loop handlers
-
+    s->Server_uv_loop = GC_MALLOC(sizeof(uv_loop_t));
+    s->Server_uv_server = GC_MALLOC(sizeof(uv_tcp_t));
+    s->Server_uv_server->data = s; // Pass server pointer to uv_loop handlers
     return s;
 }
 

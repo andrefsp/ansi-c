@@ -7,13 +7,14 @@
 #include "uv.h"
 
 
-uv_tcp_t *Server_uv_server;
-uv_loop_t *Server_uv_loop;
-
-
 typedef struct Server Server;
 
 struct Server {
+    
+    uv_tcp_t *Server_uv_server;
+    uv_loop_t *Server_uv_loop;
+
+
     int port;
     struct sockaddr_in *address;
 

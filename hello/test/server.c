@@ -31,8 +31,9 @@ void test_server_with_request(void) {
     assert(((void)"stop server", s->Stop(s) == 0));
 }
 
+
 void test_server(void) {
     test_server_start_stop();
     test_server_start_listen();
-    test_server_with_request(); 
+    test_server_with_request();
 }
